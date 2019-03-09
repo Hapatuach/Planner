@@ -1,2 +1,318 @@
-<h1>hello test </h1>
-<h2> test2 </h2>
+ <!DOCTYPE html>
+<html>
+<head>
+<style>
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2}
+
+th {
+  background-color: #000080;
+  color: white;
+}
+
+</style>
+</head>
+
+<body onload="myFunction()">
+ 
+<p id="demo"></p>
+<script>
+
+  var maxPerHour = [];
+  var startRow = [];
+      startRow [0] = 0;
+      
+  var planner = 
+  [{day:"א",hour:"1",room:"202",shem:"איתי" ,course:"חשבון"},
+  
+  {day:"א",hour:"1",room:"כיתת מוזיקה",shem:"שחר" ,course:"מוזיקה"},
+   {day:"א",hour:"2",room:"102",shem:"טובי" ,course:"אנגלית"},
+   {day:"א",hour:"2",room:"108",shem:"מיכל" ,course:"עיברית"},
+   {day:"א",hour:"2",room:"188",shem:"אלון" ,course:"חונכות"},
+   
+   {day:"ב",hour:"1",room:"101",shem:"more 2 " ,course:"וועדות"},
+   {day:"ב",hour:"1",room:"111",shem:"שי" ,course:"נגרות"},
+   
+   {day:"ב",hour:"1",room:"888",shem:"גל" ,course:"חלל"},
+   {day:"ב",hour:"2",room:"221",shem:"רינה" ,course:"מחול"},
+   {day:"ג",hour:"1",room:"222",shem:"תלמיד" ,course:"ספרדית"},
+   {day:"ג",hour:"2",room:"מגרש ספורט",shem:"מורה לספורט" ,course:"דרמה"},
+   {day:"ד",hour:"1",room:"2244",shem:"אלון " ,course:"חונכות"},
+   {day:"ה",hour:"1",room:"2621",shem:"שי" ,course:"מרכז תיקונים"},
+   {day:"ו",hour:"1",room:"111",shem:"איילן " ,course:"חשבון"},
+   {day:"ו",hour:"2",room:"מגרש ספורט",shem:"מורה לספורט " ,course:"ספורט"},
+   {day:"ו",hour:"4",room:"221",shem:"טובי" ,course:"אנגלית"}
+   
+  ];
+  
+function myFunction() {
+
+
+  
+   rearrangeTab(planner);
+ //  displayvalues(planner);
+   createTable(tableData);
+  
+}
+function displayvalues(v) {
+   
+   var str ="";
+   var len = v.length;
+   alert ("len= " + len   );
+   
+   for (var i = 0; i < len; i++)
+   {
+      str = str +  v[i].day + " " + v[i].hour +" "  + v[i].room +  "<br>" ;
+   
+  }
+  
+    document.getElementById("demo").innerHTML = str;
+}
+function rearrangeTab(v) {
+    var len = v.length;
+    var str ="";
+    var HoursPerWeek = [];
+    var maxHoursPerWeek = 0;
+    var   maxHours = 0;
+   
+ // alert ("len= " + len   );
+  
+ // change hebrew day letters to numbers for indexing 
+   for (var i = 0; i < len; i++)
+   
+   {
+   
+   switch (v[i].day) {
+ case "א":
+    day = 1;
+    break;
+  case "ב":
+    day = 2;
+    break;
+  case "ג":
+     day = 3;
+    break;
+  case "ד":
+    day = 4;
+    break;
+  case "ה":
+    day = 5;
+    break;
+  case "ו":
+    day = 6;
+    break;
+  case "ש":
+    day = 7;
+    }
+      str = str + day + " " + v[i].hour +" "  + v[i].room +  "<br>" ;
+      HoursPerWeek [i] = v[i].hour;
+      v[i].day = day;
+   
+  }
+  
+//   alert (str);
+  // check how many classes/hours per week
+   maxHoursPerWeek = (Math.max(...HoursPerWeek));
+  // alert("max hrs = "  +  maxHoursPerWeek);
+  
+   // start check how many classes in same hour per day
+    var daysInx = Create2DArray(maxHoursPerWeek+1,6); 
+    
+    for (var i = 0; i < maxHoursPerWeek+1   ; i++){   
+        		for (var j = 0; j < 7; j++)
+            {
+               daysInx [i][j]  = 0  ;
+   	   		}
+         }
+    
+ 
+    
+    for (var i = 0; i < len; i++)
+      {
+         var row = v[i].hour;
+         var col = v[i].day;
+         daysInx [row][col] ++; 
+  }
+  
+     maxelemnts = (Math.max(...daysInx[1]));
+     var rowCount = 0 ;
+     var st  =  " " ;
+     
+        for (var i = 0; i < maxHoursPerWeek +1 ; i++)
+      {
+  
+         var max = (Math.max(...daysInx[i]));
+          
+         if (max == 0 ) 
+            {rowCount = 1;}
+         else
+            {rowCount = max;}
+         
+     //    alert ("maxHours " + maxHours + "rowCount :" + rowCount  + "\n")
+ 
+         maxPerHour[i] = max ;
+         
+          if (i> 0 )
+          {
+          startRow[i] = maxHours     ;}
+          
+         maxHours = maxHours + rowCount;
+        
+  }
+ 
+  var maxInTable = (Math.max(...maxPerHour)) ;
+  
+  // Final Matrix to build HTML Table in the right order 
+  //------------------------------------------------------------
+   var FinalMatrix  = Create2DArray(maxHours,6); 
+   
+     for (var i = 0; i < maxHours   ; i++){   
+        		for (var j = 0; j < 7; j++)
+            {
+                FinalMatrix [i][j]  = -999  ;
+   	   		}
+         }
+  
+    for (var i = 0; i < len; i++)
+      {
+  
+          var row = startRow[v[i].hour];
+           
+         // change order to set days from right to left(FRIDAY FIRST SUNDAY LAST)
+         var col = 6 - v[i].day  ;
+         var finalRow = CheckNextRow(row,col,FinalMatrix,maxHours); 
+         FinalMatrix [finalRow][col] = i; 
+        
+  }
+     
+    
+    // Set Headres for Hours per day
+    var rowInx = 0 ;  
+    
+    for (var i = 0; i < maxHoursPerWeek +1    ; i++)
+      {
+       
+                     rowInx = startRow [i];   
+             	     FinalMatrix [rowInx][6] =  -1*i ;
+      }
+     
+     // Set Headres for Days in Week 
+     FinalMatrix [0][0] = "ו";
+     FinalMatrix [0][1] = "ה";
+     FinalMatrix [0][2] = "ד";
+     FinalMatrix [0][3] = "ג";
+     FinalMatrix [0][4] = "ב";
+     FinalMatrix [0][5] = "א";
+     FinalMatrix [0][6] = "  שעה " + " / " + "יום";
+
+     createTable(FinalMatrix);  
+ 
+}
+
+  function CheckNextRow(row,col,FinalMatrix,maxHours)
+  {
+   var rtRow = row;
+   for (var i = row ; i < maxHours; i++) 
+   {
+      rtRow = i; 
+     // alert ("rtrow = " +i + "erech= " + FinalMatrix[i][col]);
+      if (FinalMatrix[i][col] == -999)
+      {break;}
+    }
+   return rtRow;
+  }
+    
+  
+function Create2DArray(rows,columns) {
+   var x = new Array(rows);
+   for (var i = 0; i < rows; i++) {
+       x[i] = new Array(columns);
+   }
+   return x;
+ }  
+   
+
+    
+  // build HTML table data from an array (one or two dimensional)
+ 
+ 
+ function createTable(tableData) {
+  
+  var table = document.createElement('table');
+  var header = document.createElement("tr");
+  // get first row to be header
+  var headers = tableData[0];
+
+  // create table header
+  headers.forEach(function(rowHeader){
+    var th = document.createElement("th");
+    th.appendChild(document.createTextNode(rowHeader));
+    header.appendChild(th);
+  });      
+  console.log(headers);
+
+  // insert table header 
+  table.append(header);
+  var row = {};
+  var cell = {};
+
+  // remove first how - header
+  tableData.shift();
+  tableData.forEach(function(rowData, index) {
+    row = table.insertRow();
+    console.log("indice: " + index);
+    rowData.forEach(function(cellData) {
+      cell = row.insertCell();
+      
+      if (cellData > -1)
+      {
+         cell.textContent = planner[cellData].room + "-" +
+             planner[cellData].course;
+             
+         cell.onclick = function () {
+              tableText(this,cellData);}   
+            }
+      else
+      {
+      	 if (cellData == -999)
+            { 
+             cell.textContent = "    ";}
+         else
+         {
+         
+         	cell.textContent = cellData ;}
+            }
+            
+ 
+    });
+  });
+  document.body.appendChild(table);
+}
+// end of function
+
+  function tableText(tableCell,inx)
+  {
+  
+    var str =  
+        'פרטי השיעור\n\n' 
+    +  " שם מורה " + " : " +  planner[inx].shem +  "\n\n" 
+    +   " תוכן השיעור " + " : " + planner[inx].course +    "\n\n"
+    +  " כיתה " +  " : "  + planner[inx].room  ;
+   
+    alert ( str);
+   
+    
+  }     
+    
+</script>
+</body>
+</html>
