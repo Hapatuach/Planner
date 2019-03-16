@@ -1,7 +1,21 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
-<style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+ <style>
+
+#myInput {
+  //background-image: url('/css/searchicon.png');
+  background-position: 10px 10px;
+  background-repeat: no-repeat;
+  width: 100%;
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
 table {
   border-collapse: collapse; /* Collapse borders */
   width: 100%; /* Full-width */
@@ -19,7 +33,7 @@ th, td {
   border-bottom: 1px solid #ddd; 
 }
 
-tr:nth-child(even){background-color: #e2f2f2}
+//tr:nth-child(even){background-color: #e2f2f2}
 
 th {
   background-color: #000080;
@@ -34,10 +48,15 @@ table tr.header, table tr:hover {
 </head>
 
 <body onload="myFunction()">
+
+<h1 align="center"> מערכת שעות חטיבתית </h1>
+
+<input type="text" id="myInput" onkeyup="mySearch()" placeholder="          ...חפש שיעור " title="Type in a name">
+
  
 <p id="demo"></p>
 <script>
-
+   
   var maxPerHour = [];
   var startRow = [];
       startRow [0] = 0;
@@ -78,15 +97,15 @@ function displayvalues(v) {
    
    var str ="";
    var len = v.length;
-   alert ("len= " + len   );
-   
+    
    for (var i = 0; i < len; i++)
    {
       str = str +  v[i].day + " " + v[i].hour +" "  + v[i].room +  "<br>" ;
    
   }
   
-    document.getElementById("demo").innerHTML = str;
+ // alert (str);
+  document.getElementById("demo").innerHTML = str;
 }
 function rearrangeTab(v) {
     var len = v.length;
@@ -95,47 +114,45 @@ function rearrangeTab(v) {
     var maxHoursPerWeek = 0;
     var   maxHours = 0;
    
- // alert ("len= " + len   );
-  
- // change hebrew day letters to numbers for indexing 
+    
    for (var i = 0; i < len; i++)
    
    {
    
    switch (v[i].day) {
- case "א":
-    day = 1;
-    break;
-  case "ב":
-    day = 2;
-    break;
-  case "ג":
-     day = 3;
-    break;
-  case "ד":
-    day = 4;
-    break;
-  case "ה":
-    day = 5;
-    break;
-  case "ו":
-    day = 6;
-    break;
-  case "ש":
-    day = 7;
-    }
+     case "א":
+        day = 1;
+        break;
+      case "ב":
+        day = 2;
+        break;
+      case "ג":
+         day = 3;
+        break;
+      case "ד":
+        day = 4;
+        break;
+      case "ה":
+        day = 5;
+        break;
+      case "ו":
+        day = 6;
+        break;
+      case "ש":
+        day = 7;
+        }
+    
       str = str + day + " " + v[i].hour +" "  + v[i].room +  "<br>" ;
       HoursPerWeek [i] = v[i].hour;
       v[i].day = day;
    
   }
   
-//   alert (str);
-  // check how many classes/hours per week
+   //alert (str);
    maxHoursPerWeek = (Math.max(...HoursPerWeek));
-  // alert("max hrs = "  +  maxHoursPerWeek);
+   //alert("max hrs = "  +  maxHoursPerWeek);
   
-   // start check how many classes in same hour per day
+   
     var daysInx = Create2DArray(maxHoursPerWeek+1,6); 
     
     for (var i = 0; i < maxHoursPerWeek+1   ; i++){   
@@ -145,17 +162,22 @@ function rearrangeTab(v) {
    	   		}
          }
     
- 
-    
+     
     for (var i = 0; i < len; i++)
       {
+  
          var row = v[i].hour;
          var col = v[i].day;
          daysInx [row][col] ++; 
-  }
-  
-     maxelemnts = (Math.max(...daysInx[1]));
+    
+      }
+ 
+    // maxelemnts = (Math.max(...daysInx[1]));
+      
+     
+   
      var rowCount = 0 ;
+     
      var st  =  " " ;
      
         for (var i = 0; i < maxHoursPerWeek +1 ; i++)
@@ -168,7 +190,7 @@ function rearrangeTab(v) {
          else
             {rowCount = max;}
          
-     //    alert ("maxHours " + maxHours + "rowCount :" + rowCount  + "\n")
+       //  alert ("maxHours " + maxHours + "rowCount :" + rowCount  + "\n")
  
          maxPerHour[i] = max ;
          
@@ -177,10 +199,16 @@ function rearrangeTab(v) {
           startRow[i] = maxHours     ;}
           
          maxHours = maxHours + rowCount;
-        
+         
+       
+         st = st +" "  +  maxPerHour[i]+ " inx=" + i  + " startrow" + startRow[i] + "\n" ; 
+          
+       
   }
  
+   
   var maxInTable = (Math.max(...maxPerHour)) ;
+   
   
   // Final Matrix to build HTML Table in the right order 
   //------------------------------------------------------------
@@ -191,8 +219,10 @@ function rearrangeTab(v) {
             {
                 FinalMatrix [i][j]  = -999  ;
    	   		}
-         }
-  
+      }
+         
+         
+    
     for (var i = 0; i < len; i++)
       {
   
@@ -202,20 +232,22 @@ function rearrangeTab(v) {
          var col = 6 - v[i].day  ;
          var finalRow = CheckNextRow(row,col,FinalMatrix,maxHours); 
          FinalMatrix [finalRow][col] = i; 
-        
-  }
+     }
      
-    
+      
     // Set Headres for Hours per day
+      
     var rowInx = 0 ;  
     
     for (var i = 0; i < maxHoursPerWeek +1    ; i++)
       {
        
-                     rowInx = startRow [i];   
-             	     FinalMatrix [rowInx][6] =  -1*i ;
+       					
+      rowInx = startRow [i];   
+      FinalMatrix [rowInx][6] =  -1*i ;
       }
-     
+ 
+      
      // Set Headres for Days in Week 
      FinalMatrix [0][0] = "ו";
      FinalMatrix [0][1] = "ה";
@@ -225,24 +257,11 @@ function rearrangeTab(v) {
      FinalMatrix [0][5] = "א";
      FinalMatrix [0][6] = "  שעה " + " / " + "יום";
 
-     createTable(FinalMatrix);  
+ // Create Dybamicly HTML TABLE from 2D Array 
+     createTable(FinalMatrix);   
  
 }
-
-  function CheckNextRow(row,col,FinalMatrix,maxHours)
-  {
-   var rtRow = row;
-   for (var i = row ; i < maxHours; i++) 
-   {
-      rtRow = i; 
-     // alert ("rtrow = " +i + "erech= " + FinalMatrix[i][col]);
-      if (FinalMatrix[i][col] == -999)
-      {break;}
-    }
-   return rtRow;
-  }
-    
-  
+ 
 function Create2DArray(rows,columns) {
    var x = new Array(rows);
    for (var i = 0; i < rows; i++) {
@@ -251,14 +270,25 @@ function Create2DArray(rows,columns) {
    return x;
  }  
    
-
+    function CheckNextRow(row,col,FinalMatrix,maxHours)
+    {
+       var rtRow = row;
+       for (var i = row ; i < maxHours; i++) 
+       {
+          rtRow = i; 
+        
+          if (FinalMatrix[i][col] == -999)
+         	{break;}
+        }
+    return rtRow;
+    }
+    
     
   // build HTML table data from an array (one or two dimensional)
- 
- 
  function createTable(tableData) {
   
-  var table = document.createElement('table');
+  var table = document.createElement("table");
+      table.setAttribute("id", "table");
   var header = document.createElement("tr");
   // get first row to be header
   var headers = tableData[0];
@@ -286,8 +316,7 @@ function Create2DArray(rows,columns) {
       
       if (cellData > -1)
       {
-         cell.textContent = planner[cellData].room + "-" +
-             planner[cellData].course;
+         cell.textContent = planner[cellData].course;
              
          cell.onclick = function () {
               tableText(this,cellData);}   
@@ -300,10 +329,44 @@ function Create2DArray(rows,columns) {
          else
          {
          
-         	cell.textContent = cellData ;}
+         	cell.textContent = cellData ;            }
             }
             
- 
+            
+             
+    switch (cellData) {
+         case -1:
+            cell.style.backgroundColor = "#ff66ff";
+            break;
+          case -2:
+            cell.style.backgroundColor = "#ff4d4d";
+            break;
+  		  case -3:
+            cell.style.backgroundColor = "#ffd1b3";
+            break;
+          case -4:
+            cell.style.backgroundColor = "#ff9999";
+            break;
+          case -5:
+            cell.style.backgroundColor = "#ff9999";
+            break;      
+          case -6:
+            cell.style.backgroundColor = "#ffb380";
+            break;  
+          case -7:
+            cell.style.backgroundColor = "#ff4d4d";
+            break;
+          case -8:
+            cell.style.backgroundColor = "#ffcce6";
+            break; 
+         case -9:
+            cell.style.backgroundColor = "#ff66ff";
+            break;   
+         case -10:
+            cell.style.backgroundColor = "#ffe6f2";
+            break;   
+            }
+  
     });
   });
   document.body.appendChild(table);
@@ -317,12 +380,52 @@ function Create2DArray(rows,columns) {
         'פרטי השיעור\n\n' 
     +  " שם מורה " + " : " +  planner[inx].shem +  "\n\n" 
     +   " תוכן השיעור " + " : " + planner[inx].course +    "\n\n"
-    +  " שיעור מתקיים ב " +  " : "  + planner[inx].room  ;
+    +  " כיתה " +  " : "  + planner[inx].room  ;
    
     alert ( str);
    
     
   }     
+  
+ 
+ // SEARCH Function On HTML Table
+  function mySearch()
+  {
+  var input, filter, table, tr, td, i, txtValue;
+  
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("table");
+  tr = table.getElementsByTagName("tr");
+  th = table.getElementsByTagName("th");
+ 
+  var j = 0;
+  var loop = true;
+  
+  for (i = 0; i < tr.length; i++) {
+   var j = 0;
+   var loop = true;
+   
+   while (loop) { 
+  	    
+    td = tr[i].getElementsByTagName("td")[j];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+        loop = false;
+      } else {
+        tr[i].style.display = "none";
+      }  //  end else
+    } // end if td
+        
+       j++; 
+       if ( j ==  th.length)
+          {loop = false;}
+          
+     } // end while 
+  } // end for 
+}
     
 </script>
 </body>
